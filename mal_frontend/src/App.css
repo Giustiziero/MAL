@@ -1,0 +1,70 @@
+.search-box {
+  display: flex;
+  align-items: center;
+  background-color: #f2f2f2;
+  border-radius: 8px;
+  padding: 4px;
+  /* min-width: 600px; */
+  max-width: 800px !important;
+  width: 100%;
+  border: 2px solid purple; /* Purple outline */
+  box-sizing: border-box;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  border-radius: 8px 0 0 8px;
+  padding: 8px;
+  outline: none;
+  background-color: #f2f2f2; /* Match background color */
+}
+
+.search-button {
+  background-color: #00739D !important;
+  color: white !important;
+  border: none;
+  border-radius: 0 8px 8px 0 !important;/* Sharp left corners */
+  padding: 8px 32px !important; 
+  cursor: pointer;
+  min-width: 120px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px !important;/* Smaller text */
+}
+
+.search-button:disabled {
+  background-color: #aaaaaa !important;
+  cursor: not-allowed;
+}
+
+.result-box {
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 16px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.result-table {
+  width: 100%;
+  background-color: #f2f2f2;
+  border-collapse: collapse;
+}
+
+.result-table th,
+.result-table td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.result-table th {
+  background-color: #e0e0e0;
+}
+
+.result-table tr:hover {
+  background-color: #f1f1f1;
+}
