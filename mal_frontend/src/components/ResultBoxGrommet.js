@@ -14,25 +14,25 @@ const ResultBox = ({ recList }) => {
   }
 
   return (
-    <Box className="result-box">
-      <table className="result-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Recommendation</th>
-            <th>Value</th>
-          </tr>
-        </thead>
-        <tbody>
-          {recList.map(([recommendation, value], index) => (
-            <tr key={index}>
-              <td>{index + 1}</td>
-              <td>{recommendation}</td>
-              <td>{value}</td>
+    <Box className="result-box" >
+        <table className="result-table">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Recommendation</th>
+                <th>Value</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+            </thead>
+            <tbody>
+            {recList.map(([recommendation, value], index) => (
+                <tr key={index}>
+                <td>{index + 1}</td>
+                <td>{recommendation}</td>
+                <td>{value}</td>
+                </tr>
+            ))}
+            </tbody>
+        </table>
     </Box>
   );
 };

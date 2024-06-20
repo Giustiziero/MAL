@@ -4,6 +4,8 @@ import { Grommet, Box, Spinner } from 'grommet';
 import SearchBar from './components/SearchBarGrommet';
 import ResultBox from './components/ResultBoxGrommet';
 import axios from 'axios';
+import AutocompleteSearchBar from './components/AutoSearchBar';
+import Header from './components/Header';
 
 const theme = {
   global: {
@@ -12,6 +14,9 @@ const theme = {
       size: '14px',
       height: '20px',
     },
+    colors: {
+      brand: '#00739D',
+    }
   },
 };
 
@@ -38,20 +43,19 @@ function App() {
   };
 
   return (
-    // <div>
-    //   <SearchBar onSearch={getRec} />
-    //   {/* {loading && <Loader />} */}
-    //   {results != null && <ResultBox recList={results} />}
-    // </div>
-  <Grommet theme={theme} full>
-    <img style={{ top: 0, position: "absolute", zIndex: -1 }} src="/header_image.jpeg" />
-    <Box overflow="auto" fill align="center" justify="center" pad="large" gap="medium">
-      <Box width="large">
-          <SearchBar onSearch={getRec} />
+  <Grommet theme={theme} full className="main">
+    <Box fill className="center-box" style={{ width: "auto" }}>
+      <Header />
+      <Box className = 'center-column'>
+      {/* </Box><Box overflow="auto" fill align="center" justify="center" pad="large" gap="medium"> */}
+        <Box className='search-box-wrapper'>
+            <AutocompleteSearchBar onSearch={getRec} />
+        </Box>
+        {loading && <Spinner />}
+        {results != null && (<ResultBox recList={results} />)}
       </Box>
-      {loading && <Spinner />}
-      {results != null && <ResultBox recList={results} />}
     </Box>
+    <img style={{ top: 0, position: "absolute", zIndex: -1 }} src="/header_image.jpeg" />
   </Grommet>
   );
 }
