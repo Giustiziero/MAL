@@ -55,7 +55,7 @@ function App() {
         {results != null && (<ResultBox recList={results} />)}
       </Box>
     </Box>
-    <img style={{ top: 0, position: "absolute", zIndex: -1 }} src="/header_image.jpeg" />
+    {/* <img style={{ top: 0, position: "absolute", zIndex: -1 }} src="/header_image.jpeg" /> */}
   </Grommet>
   );
 }

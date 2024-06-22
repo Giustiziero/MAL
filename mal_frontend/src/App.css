@@ -2,10 +2,24 @@
   --container-width: 1060px;
 }
 
+html {
+  height: 100%;
+  overflow: auto;
+}
+
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  height:100%
+  height:100%;
+  overflow: auto;
+  overflow-x: hidden;
+
+  background-color: #170d24;
+  background-image:
+    radial-gradient(ellipse at 10% 90%, #3c2d83 0%, transparent 55%),
+    radial-gradient(ellipse at 90% 90%, #c33c65 0%, transparent 55%),
+    radial-gradient(ellipse at 90% 10%, #4a74dc 0%, transparent 55%),
+    radial-gradient(ellipse at 10% 10%, #35244f 0%, transparent 55%);
 }
 
 header {
@@ -123,3 +137,26 @@ header {
   align-items: center;
   justify-content: center;
 }
+
+/* The navbar container */
+.topnav {
+  overflow: hidden;
+  background-color: #333;
+}
+
+/* Navbar links */
+.topnav a {
+  float: left;
+  display: block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+/* Links - change color on hover */
+.topnav a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
