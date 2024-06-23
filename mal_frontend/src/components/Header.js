@@ -14,12 +14,12 @@ const Header = () => {
       style={{ alignSelf: "center", width: '100%', margin: "auto" }}
     >
       <Box width="1060px" margin={{ left: 'auto', right: 'auto' }} direction='row' justify="between" align="center">
-        <Text size="large" weight="bold" color="white">
-          Anime Recs
+        <Text className="logo" size="large" weight="bold" color="white">
+          MyAnimeRecs
         </Text>
         <Box className='topnav' direction='row' >
-            <Anchor href="#" label="Anime-Based Rec" />
-            <Anchor href="#" label="About" />
+            <Anchor href="/" label="Anime-Based Rec" />
+            <Anchor href="/about" label="About" />
         </Box>
       </Box>
     </Box>

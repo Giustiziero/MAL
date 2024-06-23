@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, TextInput, Button } from 'grommet';
 import { Search } from 'grommet-icons';
 import axios from 'axios';
-import '../App.css';  // Ensure your CSS styles are imported
+import '../../App.css';  // Ensure your CSS styles are imported
 
 const AutocompleteSearchBar = ({ onSearch }) => {
   const [value, setValue] = useState('');

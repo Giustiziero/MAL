@@ -14,12 +14,19 @@ body {
   overflow: auto;
   overflow-x: hidden;
 
-  background-color: #170d24;
-  background-image:
-    radial-gradient(ellipse at 10% 90%, #3c2d83 0%, transparent 55%),
-    radial-gradient(ellipse at 90% 90%, #c33c65 0%, transparent 55%),
-    radial-gradient(ellipse at 90% 10%, #4a74dc 0%, transparent 55%),
-    radial-gradient(ellipse at 10% 10%, #35244f 0%, transparent 55%);
+  background: repeating-linear-gradient(
+    45deg,
+    #606dbc,
+    #606dbc 10px,
+    #465298 10px,
+    #465298 20px);
+    background:
+    radial-gradient(black 15%, transparent 16%) 0 0,
+    radial-gradient(black 15%, transparent 16%) 8px 8px,
+    radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 0 1px,
+    radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 8px 9px;
+    background-color:#282828;
+    background-size:16px 16px;
 }
 
 header {
@@ -29,6 +36,14 @@ header {
   text-align: center;
 }
 
+.logo {
+  font-family: "Cairo Play", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+  font-variation-settings:
+  "slnt" -10;
+}
 .search-box {
   display: flex;
   align-items: center;
@@ -126,7 +141,7 @@ header {
   justify-content:"center";
   padding-left: 0% !important;
   padding-right: 0% !important;
-  padding-top:48px;
+  padding-top:0px;
   padding-bottom: 48px;
   margin: 0 auto;
   width: var(--container-width)
