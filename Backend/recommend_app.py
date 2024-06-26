@@ -30,7 +30,7 @@ def get_similar_animes_endpoint():
 def get_suggestions_endpoint():
     query = request.args.get('query', '').lower()
     if not query:
-        return jsonify([])
+        return jsonify(list(similarity_df.columns))
 
     suggestions = get_suggestions(query, similarity_df)
     return jsonify(suggestions)
