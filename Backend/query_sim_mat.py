@@ -51,7 +51,6 @@ def get_index_dict():
     finally:
             print("\get_index_dict done")
 
-
 def get_similar_animes(anime_name, index_dict, top_n=25):
     load_dotenv()
     HOST = os.getenv('ACCOUNT_HOST')
