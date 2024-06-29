@@ -36,5 +36,5 @@ def get_suggestions_endpoint():
     suggestions = get_suggestions(query, index_dict)
     return jsonify(suggestions)
 
-# if __name__ == '__main__':
-#     # app.run()
+if __name__ == '__main__':
+    app.run()
