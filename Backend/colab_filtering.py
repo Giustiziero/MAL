@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-from sklearn.metrics.pairwise import cosine_similarity
 import os
 import logging
 from scipy.sparse import csr_matrix, save_npz, load_npz
