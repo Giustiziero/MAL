@@ -10,15 +10,16 @@ CORS(app)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-logging.info("file just ran")
+logger.info("file just ran")
 # Load your similarity DataFrame (assuming it's stored as a CSV file locally)
 # similarity_df = pd.read_csv('./Temp_data/cosine_sim_mat.csv', index_col=0)
 index_dict = get_index_dict()
 
 @app.route('/get_similar_animes', methods=['GET'])
 def get_similar_animes_endpoint():
-    logging.info("get similar anime received")
+    logger.info("get similar anime received")
     anime_name = request.args.get('anime_name')
     top_n = request.args.get('top_n', default=25, type=int)
 
@@ -35,7 +36,7 @@ def get_similar_animes_endpoint():
 
 @app.route('/api/suggestions', methods=['GET'])
 def get_suggestions_endpoint():
-    logging.info("get suggestions received")
+    logger.info("get suggestions received")
     query = request.args.get('query', '').lower()
     if not query:
         return jsonify(list(index_dict.keys()))
@@ -44,4 +45,7 @@ def get_suggestions_endpoint():
     return jsonify(suggestions)
 
 if __name__ == '__main__':
-    app.run()
+    try:
+        app.run(host='0.0.0.0')
+    except Exception as e:
+        logger.exception("Failed to start the application")
