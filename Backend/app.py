@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import pandas as pd
 from flask_cors import CORS
 from query_sim_mat import get_similar_animes, get_index_dict
@@ -16,6 +16,11 @@ logger.info("file just ran")
 # Load your similarity DataFrame (assuming it's stored as a CSV file locally)
 # similarity_df = pd.read_csv('./Temp_data/cosine_sim_mat.csv', index_col=0)
 index_dict = get_index_dict()
+
+@app.route('/')
+def index():
+   logger.info('Request for index page received')
+   return render_template('index.html')
 
 @app.route('/get_similar_animes', methods=['GET'])
 def get_similar_animes_endpoint():
