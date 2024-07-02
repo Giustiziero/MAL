@@ -12,7 +12,7 @@ CORS(app)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-logger.info("file just ran twice")
+logger.info("file just ran twice twice")
 # Load your similarity DataFrame (assuming it's stored as a CSV file locally)
 # similarity_df = pd.read_csv('./Temp_data/cosine_sim_mat.csv', index_col=0)
 # index_dict = get_index_dict()
