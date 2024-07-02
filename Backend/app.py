@@ -1,8 +1,8 @@
 from flask import Flask, request, jsonify, render_template
-# import pandas as pd
+import pandas as pd
 from flask_cors import CORS
-# from query_sim_mat import get_similar_animes, get_index_dict
-# from search_bar_recs import get_suggestions  # Import the new function from database module
+from query_sim_mat import get_similar_animes, get_index_dict
+from search_bar_recs import get_suggestions  # Import the new function from database module
 import logging 
 
 app = Flask(__name__)
@@ -15,7 +15,13 @@ logger = logging.getLogger(__name__)
 logger.info("file just ran twice twice")
 # Load your similarity DataFrame (assuming it's stored as a CSV file locally)
 # similarity_df = pd.read_csv('./Temp_data/cosine_sim_mat.csv', index_col=0)
-# index_dict = get_index_dict()
+
+try: 
+   index_dict = get_index_dict()
+   logger.info("Just ran get_index")
+except Exception as e:
+   logger.info("Failed to run get_index")
+   logger.warning(str(e))
 
 @app.route('/')
 def index():
