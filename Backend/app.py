@@ -8,7 +8,7 @@ import logging
 app = Flask(__name__)
 CORS(app)
 
-# Configure logging
+# Configure logging ded
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
