@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Table, TableBody, TableCell, TableHeader, TableRow, Text } from 'grommet';
+import { Box, Text } from 'grommet';
 import '../../App.css';
 
 const ResultBox = ({ recList }) => {

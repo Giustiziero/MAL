@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, TextInput, Button } from 'grommet';
+import { TextInput, Button } from 'grommet';
 import { Search } from 'grommet-icons';
 import axios from 'axios';
 import '../../App.css';  // Ensure your CSS styles are imported
