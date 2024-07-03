@@ -13,7 +13,7 @@ const ItemRec = () => {
     setLoading(true);
   
     try {
-      const response = await axios.get('http://127.0.0.1:5000/get_similar_animes', {
+      const response = await axios.get('https://malrec.azurewebsites.net/get_similar_animes', {
         params: { anime_name: query },
       });
       setResults(response.data);
