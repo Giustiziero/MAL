@@ -149,5 +149,6 @@ def process_sim_scores(scores_arr, index_dict, top_n):
     print(similar_animes)
     return similar_animes
 
-index_dict = get_index_dict()
-get_similar_animes("Naruto", index_dict)
+if __name__ == '__main__':
+    index_dict = get_index_dict()
+    get_similar_animes("Naruto", index_dict)
