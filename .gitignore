@@ -193,3 +193,6 @@ yarn-error.log*
 
 *.env
 config.py
+
+# files with data
+*.json
