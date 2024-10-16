@@ -3,9 +3,9 @@ import pyodbc
 
 # Define your connection parameters
 server = 'tcp:maldb.database.windows.net,1433'       # e.g., 'localhost\\SQLEXPRESS' or '192.168.1.1'
-database = 'MAL SQL'   # e.g., 'testdb'
-username = 'maldb-admin'        # e.g., 'sa'
-password = 'Mal@rocks'        # e.g., 'your_password'
+database = os.get_env("maldb")   # e.g., 'testdb'
+username = os.get_env("maldb-user")        # e.g., 'sa'
+password = os.get_env("maldb-pass")         # e.g., 'your_password'
 driver = '{ODBC Driver 17 for SQL Server}' # Ensure this matches the installed driver
 # driver = '/opt/homebrew/lib/libmsodbcsql.17.dylib'
 # Define your connection string
