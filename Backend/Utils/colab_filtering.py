@@ -75,7 +75,6 @@ class ItemColab:
         cosine_similarity.to_csv("./Temp_data/cosine_sim_mat.csv")
         return cosine_similarity
 
-
     # matrix = list(file_path_dict.keys())
     # result = cosine_similarity_batch(matrix[4], file_path_dict[matrix[4]])
 
