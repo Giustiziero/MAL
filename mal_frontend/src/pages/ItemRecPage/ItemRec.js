@@ -2,21 +2,30 @@ import React, { useState } from 'react';
 import { Box, Spinner, Image } from 'grommet';
 import AutocompleteSearchBar from './AutoSearchBar';
 import ResultBox from './ResultBoxGrommet';
+import AnimeDetails from './AnimeDetails';  // Import the AnimeDetails component
 import axios from 'axios';
 import '../../App.css';
 
 const ItemRec = () => {
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState(null);
+  const [animeDetails, setAnimeDetails] = useState(null);
   
   const getRec = async (query) => {
     setLoading(true);
   
     try {
-      const response = await axios.get('https://malrec.azurewebsites.net/get_similar_animes', {
+      // const recResponse = await axios.get('https://malrec.azurewebsites.net/get_similar_animes', {
+      const recResponse = await axios.get('http://127.0.0.1:5000/get_similar_animes', {
         params: { anime_name: query },
       });
-      setResults(response.data);
+      setResults(recResponse.data);
+      
+      const detailsResponse = await axios.get('http://127.0.0.1:5000/api/anime_details', {
+        params: { anime_name: query },
+        fields: ['main_picture', 'mean', 'genres', 'synopsis', 'title'] //image_url, score, genres, synopsis 
+      });
+      setAnimeDetails(detailsResponse.data);  
     } catch (error) {
       console.error('There was a problem with the fetch operation:', error);
     } finally {
@@ -42,8 +51,13 @@ const ItemRec = () => {
         <Box className='search-box-wrapper'>
           <AutocompleteSearchBar onSearch={getRec} />
         </Box>
+
         {loading && <Spinner />}
+        
+        {animeDetails && <AnimeDetails details={animeDetails} />}
+
         {results != null && (<ResultBox recList={results} />)}
+
       </Box>
     </Box>
   );
