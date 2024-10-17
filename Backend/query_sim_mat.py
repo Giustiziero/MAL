@@ -3,152 +3,166 @@ from azure.cosmos import CosmosClient, exceptions
 from azure.cosmos.partition_key import PartitionKey
 from dotenv import load_dotenv
 import os
-import pdb
 import time
-# Azure Cosmos DB connection details
 
+# Define custom exceptions for specific error conditions
+class DatabaseNotFoundError(Exception):
+    pass
 
-def get_index_dict():
-    load_dotenv()
-    HOST = os.getenv('ACCOUNT_HOST')
-    MASTER_KEY = os.getenv('ACCOUNT_KEY')
-    USER_AGENT = 'MALREC/1.0'
-    DATABASE_ID = 'MalRecCosmos'
-    CONTAINER_ID = 'anime_details'
+class ContainerNotFoundError(Exception):
+    pass
 
-    client = CosmosClient(HOST, {'masterKey': MASTER_KEY}, user_agent=USER_AGENT)
+class ItemNotFoundError(Exception):
+    pass
 
-    try:
+class DatabaseHandler:
+    def __init__(self, database_id):
+        load_dotenv()
+        self.host = os.getenv('ACCOUNT_HOST')
+        self.master_key = os.getenv('ACCOUNT_KEY')
+        self.user_agent = 'MALREC/1.0'
+        self.client = CosmosClient(self.host, {'masterKey': self.master_key}, user_agent=self.user_agent)
+        self.db_id = self.client.get_database_client(database_id)
+        self.db = self.get_database()
+
+    def get_database(self):
         try:
-            db = client.get_database_client(DATABASE_ID)
-            print('Database with id \'{0}\' was found'.format(DATABASE_ID))
-        except:
-            print('Error: Database with id \'{0}\' not found'.format(DATABASE_ID))
-            pass
-        # setup container for this sample
+            db = self.client.get_database_client(self.db_id)
+            print(f"Database '{self.db_id}' found.")
+            return db
+        except Exception as e:
+            raise DatabaseNotFoundError(f"Database '{self.db_id}' not found: {str(e)}")
+
+    def get_container(self, container_id):
         try:
-            container = db.get_container_client(CONTAINER_ID)
-            print('Container with id \'{0}\' was found'.format(CONTAINER_ID))
-        except:
-            print('Container with id \'{0}\' was not found'.format(CONTAINER_ID))
-            pass
+            container = self.db.get_container_client(container_id)
+            print(f"Container '{container_id}' found.")
+            return container
+        except Exception as e:
+            raise ContainerNotFoundError(f"Container '{container_id}' not found: {str(e)}")
 
-        try: 
-            start = time.time()
-
-            response = container.read_item(item='anime_indexes',partition_key='ByAnimeName')
-            index_dict = response.get('index_dict')
-            print(len(response.get('index_dict')))
-            dur = time.time() - start
-            print(f"query took {dur}")
-            return index_dict
-        except Exception as e :
-            print(f"second query failure \n {e}")
-
-    except exceptions.CosmosHttpResponseError as e:
-        print('\get_index_dict has caught an error. {0}'.format(e.message))
-
-    finally:
-            print("\get_index_dict done")
-
-def get_similar_animes(anime_name, index_dict, top_n=25):
-    load_dotenv()
-    HOST = os.getenv('ACCOUNT_HOST')
-    MASTER_KEY = os.getenv('ACCOUNT_KEY')
-    USER_AGENT = 'MALREC/1.0'
-    DATABASE_ID = 'MalRecCosmos'
-    CONTAINER_ID = 'cos_sim_scores'
-
-    client = CosmosClient(HOST, {'masterKey': MASTER_KEY}, user_agent=USER_AGENT)
-    # setup database for this sample
-    try:
+    def read_item(self, container, item_id, partition_key):
         try:
-            db = client.get_database_client(DATABASE_ID)
-            print('Database with id \'{0}\' was found'.format(DATABASE_ID))
-        except:
-            print('Error: Database with id \'{0}\' not found'.format(DATABASE_ID))
-            pass
-        # setup container for this sample
+            response = container.read_item(item=item_id, partition_key=partition_key)
+            return response
+        except exceptions.CosmosHttpResponseError as e:
+            raise ItemNotFoundError(f"Item with ID '{item_id}' and partition key '{partition_key}' not found: {e.message}")
+
+    def create_container_if_not_exists(self, container_id, partition_key):
+        """
+        Checks if the container exists, and creates it if it doesn't.
+        :param container_id: ID of the container to create.
+        :param partition_key: Partition key for the container (e.g., "/anime_name").
+        """
         try:
-            container = db.get_container_client(CONTAINER_ID)
-            print('Container with id \'{0}\' was found'.format(CONTAINER_ID))
-        except:
-            print('Container with id \'{0}\' was not found'.format(CONTAINER_ID))
-            pass
+            # Try to get the container, create it if it does not exist
+            container = self.db.create_container_if_not_exists(
+                id=container_id,
+                partition_key=PartitionKey(path=partition_key)
+            )
+            print(f"Container '{container_id}' is ready.")
+            return container
+        except exceptions.CosmosHttpResponseError as e:
+            raise Exception(f"Failed to create or access container: {e.message}")
+
+    def write_anime_details(self, anime_id, anime_name, anime_details):
+        """
+        Writes anime details into the 'anime_details_full' container.
+        :param anime_id: Unique ID for the anime
+        :param anime_name: Name of the anime (indexed for search)
+        :param anime_details: Dictionary containing all anime details from the API
+        """
+        try:
+            container = self.get_container('anime_details_full')
+
+            # Document structure for the anime
+            anime_document = {
+                'id': anime_id,
+                'anime_name': anime_name,
+                **anime_details  # Unpack the details dictionary into the document
+            }
+
+            # Insert the document into the container
+            container.upsert_item(anime_document)
+            print(f"Anime '{anime_name}' (ID: {anime_id}) inserted/updated successfully.")
+        except Exception as e:
+            raise Exception(f"Failed to insert anime details: {e}")
         
-        ### Querying method
-        # try: 
-        #     start =time.time()
-        #     query = "SELECT * FROM c WHERE c.anime_name=@anime_name"
-        #     parameters = [
-        #         {"name": "@anime_name", "value": anime_name}
-        #     ]
-        #     items = list(container.query_items(
-        #         query=query,
-        #         parameters=parameters,
-        #         enable_cross_partition_query=True
-        #     ))
-        #     dur = time.time() - start
-        #     print(len(items))
-        #     print(f"query took {dur}")
-        # except e: 
-        #     print(f"query had some issue: \n {e}")
+class AnimeService:
+    def __init__(self, db_handler):
+        self.db_handler = db_handler
 
-        ### Secondary method for getting the index_dict -- too slow
-        # try: 
-        #     start = time.time()
+    def get_index_dict(self):
+        try:
+            container = self.db_handler.get_container('anime_details')
+            start = time.time()
+            response = self.db_handler.read_item(container, 'anime_indexes', 'ByAnimeName')
+            index_dict = response.get('index_dict')
+            print(f"Index dictionary length: {len(index_dict)}")
+            print(f"Query took {time.time() - start:.2f} seconds")
+            return index_dict
+        except (DatabaseNotFoundError, ContainerNotFoundError, ItemNotFoundError) as e:
+            print(f"Error retrieving index dictionary: {e}")
+            return None
 
-        #     query = "SELECT c.anime_name FROM c ORDER BY c.id ASC"
-        #     items = list(container.query_items(
-        #         query=query,
-        #         enable_cross_partition_query=True
-        #     ))
-            
-            
+    def get_similar_animes(self, anime_name, index_dict, top_n=25):
+        try:
+            container = self.db_handler.get_container('cos_sim_scores')
+            anime_id = index_dict[anime_name]
+            start = time.time()
+            response = self.db_handler.read_item(container, str(anime_id), anime_name)
+            scores_arr = response.get('scores_array')
+            print(f"Query took {time.time() - start:.2f} seconds")
+            return self.process_sim_scores(scores_arr, index_dict, top_n)
+        except KeyError:
+            raise ValueError(f"Anime '{anime_name}' not found in index.")
+        except (DatabaseNotFoundError, ContainerNotFoundError, ItemNotFoundError) as e:
+            print(f"Error retrieving similar animes: {e}")
+            return None
 
-        #     dur = time.time() - start
-        #     print(f"query took {dur}")
-        # except:
-        #     print(f"second query failure \n {e.message}")
-
-        ### Querying direct through this method is faster
-        start = time.time()
-        anime_id = index_dict[anime_name]
-        response = container.read_item(item=str(anime_id), partition_key=anime_name)
-        scores_arr = response.get('scores_array')
-        print(len(scores_arr))
-        dur = time.time() - start
-        print(f"query direct took {dur}")
-
-        sim_scores = process_sim_scores(scores_arr, index_dict, top_n)
-        return sim_scores
-    except exceptions.CosmosHttpResponseError as e:
-        print('\nget_similar_anime has caught an error. {0}'.format(e.message))
-
-    finally:
-            print("\get_similar_anime done")
-
-    # similar_animes = similarity_df[anime_name].sort_values(ascending=False)
-    # similar_animes = similar_animes.head(top_n + 1).iloc[1:]  # Exclude the anime itself
-    # similar_animes = (similar_animes * 100).round(1)
-    # return similar_animes
-
-def process_sim_scores(scores_arr, index_dict, top_n):
-    # Create a list of anime names based on the indexes
-    index_to_anime = {v: k for k, v in index_dict.items()}
-    anime_names = [index_to_anime[i] for i in range(len(scores_arr))]
-
-    # Create the pandas series
-    anime_scores = pd.Series(data=scores_arr, index=anime_names)
-
-    index_dict = scores_arr
-
-    similar_animes = anime_scores.sort_values(ascending=False)
-    similar_animes = similar_animes.head(top_n + 1).iloc[1:]  # Exclude the anime itself
-    similar_animes = (similar_animes * 100).round(1)
-    print(similar_animes)
-    return similar_animes
-
+    def process_sim_scores(self, scores_arr, index_dict, top_n):
+        index_to_anime = {v: k for k, v in index_dict.items()}
+        anime_names = [index_to_anime[i] for i in range(len(scores_arr))]
+        anime_scores = pd.Series(data=scores_arr, index=anime_names)
+        similar_animes = anime_scores.sort_values(ascending=False)
+        similar_animes = similar_animes.head(top_n + 1).iloc[1:]  # Exclude the anime itself
+        similar_animes = (similar_animes * 100).round(1)
+        print(similar_animes)
+        return similar_animes
+    
 if __name__ == '__main__':
-    index_dict = get_index_dict()
-    get_similar_animes("Naruto", index_dict)
+    db_handler = DatabaseHandler('MalRecCosmos')
+    anime_service = AnimeService(db_handler)
+
+    index_dict = anime_service.get_index_dict()
+    print(list(index_dict.items())[:10])
+    if index_dict:
+        try:
+            anime_service.get_similar_animes("Naruto", index_dict)
+        except ValueError as e:
+            print(f"Error: {e}")
+
+    # New stuff
+    # Create Container
+    partition_key = '/anime_name'
+    container_id = 'anime_details_full'
+    db_handler.create_container_if_not_exists(container_id, partition_key)
+
+    # # Test container
+    from Utils.MAL_connection.MAL_API_Fetcher import MAL_API_Fetcher
+    fetcher = MAL_API_Fetcher()
+    anime_name = 'Naruto'
+    anime_details = fetcher.get_anime_details_from_name(anime_name)
+    print((anime_details['id'], anime_details['title']))
+
+    id = anime_details['id']
+    del anime_details['id']
+    # anime_details_test = {
+    #     'description': 'A story about ninjas...',
+    #     'genre': ['Action', 'Adventure']
+    # }
+
+    db_handler.write_anime_details(str(id), anime_name, anime_details)
+    print("succesfully upserted my item")
+    container = db_handler.get_container(container_id)
+    print(db_handler.read_item(container, '20', 'Naruto'))

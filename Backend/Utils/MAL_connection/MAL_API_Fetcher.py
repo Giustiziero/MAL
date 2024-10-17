@@ -2,41 +2,41 @@ import requests
 import numpy as np
 import time
 import json
-import MAL_API_Connector
-
+from .MAL_API_Connector import MAL_API_Connector
+import os
 # This class is used as the main application for collecting data from the myanimelist API
+
+class AnimeIdNotFoundException(Exception):
+   pass
+
+class AnimeExactMatchNotFoundException(Exception):
+   pass
+
+class AnimeMatchNotFoundException(Exception):
+   pass
+
+class AnimeDetailsHTTPError:
+   pass
 
 class MAL_API_Fetcher:
 
   def __init__(self):
     self.base_url = "https://api.myanimelist.net/v2/"
-    self.api_key = self.get_api_key()
+    self.file_dir  = os.path.dirname(__file__)
+    # self.api_key = self.get_api_key()
     self.api_connector = MAL_API_Connector()
-    self.api_token = self.api_connector.access_token
+    self.access_token = self.api_connector.access_token
 
+  # TO-DO: consider deleting since we already get this from MAL_Connector
   def get_api_key(self):
-    with open('token.json', "r") as f:
+
+    with open(f'{self.file_dir}/token.json', "r") as f:
       json_file = json.load(f)
       access_token = json_file['access_token']
-    return access_token
+      return access_token
 
   # Function to get user anime list with scores
   def get_user_anime_list(self, username):
-
-      # username = "TensaiOji"
-
-      # url = f'https://api.myanimelist.net/v2/users/{username}/animelist'
-      # url_2 = f'https://api.myanimelist.net/v2/users/{username}/animelist?fields=anime_list_entries.list_status.num_times_rewatched,score'
-
-      # # Set up the headers with your access token
-      # headers = {
-      #     'Authorization': f'Bearer {access_token}',
-      # }
-
-      # # Send a GET request to retrieve the user's anime list
-      # response = requests.get(url_2, headers=headers)
-
-
 
       # Endpoint to retrieve user anime list
       endpoint = f"users/{username}/animelist"
@@ -49,16 +49,15 @@ class MAL_API_Fetcher:
           "limit": 300,  # Adjust the limit as needed
           "offset": 0,
       }
-      # pdb.set_trace()
       # Initialize an empty list to store results
       user_anime_list = []
 
       while True:
           # Make the API request
           response = requests.get(
-              f"{self.BASE_URL}{endpoint}",
+              f"{self.base_url}{endpoint}",
               params=params,
-              headers={"Authorization": f"Bearer {self.api_key}"}
+              headers={"Authorization": f"Bearer {self.access_token}"}
           )
           time.sleep(0.4)
 
@@ -66,12 +65,6 @@ class MAL_API_Fetcher:
               data = response.json()
               user_anime_list.extend(data["data"])
               break
-              # Check if there are more pages
-              # if "paging" in data and "next" in data["paging"]:
-              #     params["offset"] += 300
-              #     pdb.set_trace()
-              # else:
-              #     break
           else:
               print(response.json())
               print(f"Error fetching anime list for {username}: {response.status_code}")
@@ -110,5 +103,86 @@ class MAL_API_Fetcher:
 
       return user_lists_with_scores
 
+  def get_anime_details_from_name(self, anime_name):
+    anime_id, _ = self.get_anime_id(anime_name)
+    anime_details = self.get_anime_details(anime_id)
+    return anime_details
+      
+  # Function to search anime by name with exact match using MyAnimeList API
+  def get_anime_id(self, anime_name):
+      # The MAL API endpoint for searching anime by name
+      url = f"https://api.myanimelist.net/v2/anime?q='{anime_name}'&limit=100"
+
+      # Set up the headers with the access token for authorization
+      headers = {
+          "Authorization": f"Bearer {self.access_token}"
+      }
+
+      # Make the GET request to search for the anime
+      response = requests.get(url, headers=headers)
+      response.raise_for_status()
+      # Check if the request was successful
+      # Parse the JSON response
+      data = response.json()
+      if data.get('data'):
+          # Loop through the results to find an exact match
+          for anime in data['data']:                  
+              if anime['node']['title'].lower() == anime_name.lower():
+                  anime_id = anime['node']['id']
+                  anime_title = anime['node']['title']
+                  return anime_id, anime_title
+          raise AnimeExactMatchNotFoundException(f"Got anime options for {anime_name}, but no exact match found.")
+      else:
+        raise AnimeMatchNotFoundException(f"No similar anime matches for {anime_name} were found")
+
+  def get_anime_details(self, anime_id):
+    # Base URL for getting anime details
+    url = f"https://api.myanimelist.net/v2/anime/{anime_id}"
+    
+    # Fields we want to retrieve about the anime
+    fields = (
+        "id,title,main_picture,alternative_titles,start_date,end_date,synopsis,mean,rank,"
+        "popularity,num_list_users,num_scoring_users,nsfw,created_at,updated_at,"
+        "media_type,status,genres,my_list_status,num_episodes,start_season,broadcast,"
+        "source,average_episode_duration,rating,pictures,background,"
+        "related_anime,related_manga,recommendations,studios,statistics"
+    )
+
+    # Adding headers for authorization
+    headers = {
+        "Authorization": f"Bearer {self.access_token}"
+    }
+
+    # Adding fields to the query parameters
+    params = {
+        "fields": fields
+    }
+
+    # Make the GET request to the API
+    response = requests.get(url, headers=headers, params=params)
+    try: 
+      response.raise_for_status()
+      return response.json()
+    except requests.exceptions.HTTPError as e:
+      raise AnimeDetailsHTTPError(f"Failed to get anime details from anime id {anime_id}: {e.message}")
+
+if __name__ == '__main__':
+  # Create Object
+  fetcher = MAL_API_Fetcher()
+  # print(fetcher.get_user_anime_list("TensaiOji"))
+
+  # Example usage
+  anime_name = "Naruto"
+  anime_id, anime_title = fetcher.get_anime_id(anime_name)
+
+  # anime_list = fetcher.get_anime_id(anime_name)
+  # print(anime_list)
+
+  if anime_id:
+      print(f"Anime ID: {anime_id}, Title: {anime_title}")
+  else:
+      print(f"Error: {anime_title}")
+
+  print(type(fetcher.get_anime_details_from_name(anime_name)))
 
 # Class End
