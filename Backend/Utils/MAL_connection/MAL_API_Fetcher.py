@@ -2,7 +2,7 @@ import requests
 import numpy as np
 import time
 import json
-from .MAL_API_Connector import MAL_API_Connector
+from MAL_API_Connector import MAL_API_Connector
 import os
 # This class is used as the main application for collecting data from the myanimelist API
 

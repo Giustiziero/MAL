@@ -92,3 +92,4 @@ if __name__ == '__main__':
     #     app.run(host='0.0.0.0')
     # except Exception as e:
     #     logger.exception("Failed to start the application")
+    
