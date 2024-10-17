@@ -148,12 +148,10 @@ class MAL_API_Fetcher:
         "related_anime,related_manga,recommendations,studios,statistics"
     )
 
-    # Adding headers for authorization
     headers = {
         "Authorization": f"Bearer {self.access_token}"
     }
 
-    # Adding fields to the query parameters
     params = {
         "fields": fields
     }
