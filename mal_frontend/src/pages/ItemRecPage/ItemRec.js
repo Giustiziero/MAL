@@ -48,15 +48,15 @@ const ItemRec = () => {
             }}
           />
         </Box>
-        <Box className='search-box-wrapper'>
+
+        <Box direction="row" align="center" justify="center" className='search-box-wrapper' gap="small">
+          {loading && <Spinner />}
           <AutocompleteSearchBar onSearch={getRec} />
         </Box>
-
-        {loading && <Spinner />}
         
         {animeDetails && <AnimeDetails details={animeDetails} />}
 
-        {results != null && (<ResultBox recList={results} />)}
+        {results != null && (<ResultBox recList={results} onSearch={getRec} />)}
 
       </Box>
     </Box>

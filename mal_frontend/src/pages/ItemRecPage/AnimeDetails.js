@@ -16,7 +16,6 @@ const AnimeDetails = ({ details }) => {
         {/* Set fit="contain" to avoid cropping and adjust layout */}
         <Image src={largeImageUrl} fit="contain" style={{ maxHeight: '300px', width: 'auto' }} />
       </Box>
-
       
       {/* Anime Details */}
       <Box flex>

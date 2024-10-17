@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Text } from 'grommet';
 import '../../App.css';
 
-const ResultBox = ({ recList }) => {
+const ResultBox = ({ recList, onSearch }) => {
   console.log(recList);
 
   if (!recList || recList.length === 0) {
@@ -12,6 +12,11 @@ const ResultBox = ({ recList }) => {
       </Box>
     );
   }
+
+  const handleClick = (animeName) => {
+    // Trigger a new search for the selected anime
+    onSearch(animeName);
+  };
 
   return (
     <Box className="result-box" >
@@ -27,7 +32,15 @@ const ResultBox = ({ recList }) => {
             {recList.map(([recommendation, value], index) => (
                 <tr key={index}>
                 <td>{index + 1}</td>
-                <td>{recommendation}</td>
+                <td>
+                  <a 
+                    href="#" 
+                    onClick={() => handleClick(recommendation)}
+                    style={{ color: 'darkblue', textDecoration: 'none' }} 
+                  >
+                    {recommendation}
+                  </a>
+                </td>
                 <td>{value}</td>
                 </tr>
             ))}

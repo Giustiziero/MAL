@@ -29,7 +29,6 @@ except Exception as e:
    logger.info("Failed to run get_index")
    logger.warning(str(e))
 
-
 @app.route('/')
 def index():
    logger.info('Request for index page received')
@@ -92,4 +91,4 @@ if __name__ == '__main__':
     #     app.run(host='0.0.0.0')
     # except Exception as e:
     #     logger.exception("Failed to start the application")
-    
+
