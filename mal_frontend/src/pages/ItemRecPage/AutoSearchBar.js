@@ -12,7 +12,8 @@ const AutocompleteSearchBar = ({ onSearch }) => {
   useEffect(() => {
     const fetchSuggestions = async () => {
       try {
-        const response = await axios.get('https://malrec.azurewebsites.net/api/suggestions');
+        // const response = await axios.get('https://malrec.azurewebsites.net/api/suggestions'); http://127.0.0.1:5000
+        const response = await axios.get('http://127.0.0.1:5000/api/suggestions');
         setAllSuggestions(response.data);
         console.log('Fetched suggestions:', response.data);
       } catch (error) {

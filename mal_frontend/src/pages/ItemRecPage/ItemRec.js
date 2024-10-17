@@ -16,11 +16,13 @@ const ItemRec = () => {
   
     try {
       const recResponse = await axios.get('https://malrec.azurewebsites.net/get_similar_animes', {
+      // const recResponse = await axios.get('http://127.0.0.1:5000/get_similar_animes', {
         params: { anime_name: query },
       });
       setResults(recResponse.data);
-      
+
       const detailsResponse = await axios.get('https://malrec.azurewebsites.net/api/anime_details', {
+      // const detailsResponse = await axios.get('http://127.0.0.1:5000/api/anime_details', {
         params: { anime_name: query },
         fields: ['main_picture', 'mean', 'genres', 'synopsis', 'title'] //image_url, score, genres, synopsis 
       });

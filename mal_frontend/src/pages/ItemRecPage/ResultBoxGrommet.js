@@ -33,13 +33,19 @@ const ResultBox = ({ recList, onSearch }) => {
                 <tr key={index}>
                 <td>{index + 1}</td>
                 <td>
-                  <a 
-                    href="#" 
+                  <button
                     onClick={() => handleClick(recommendation)}
-                    style={{ color: 'darkblue', textDecoration: 'none' }} 
-                  >
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: 'darkblue',
+                      textDecoration: 'none',
+                      cursor: 'pointer',
+                    }}
+                    >
                     {recommendation}
-                  </a>
+                  </button>
+
                 </td>
                 <td>{value}</td>
                 </tr>
