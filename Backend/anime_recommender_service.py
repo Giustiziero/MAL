@@ -83,10 +83,8 @@ class AnimeRecommenderService:
                 return fetched_details
         except Exception as e:
             print("Failed to fetch anime details from external source")
-            return None
 
         # TO-DO: decide whether to make this an exception
-        return None
 
 if __name__ == '__main__':
     from Backend.Utils.MAL_connection.MAL_API_fetcher import MAL_API_Fetcher

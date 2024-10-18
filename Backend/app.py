@@ -23,7 +23,7 @@ try:
     fetcher = MAL_API_Fetcher(connector)
 except Exception as e:
     fetcher = None
-    logger.warning(f"Failed to start fetcher: {e.message}")
+    logger.warning(f"Failed to start fetcher")
 
 try: 
     db_handler = DatabaseHandler('MalRecCosmos')
