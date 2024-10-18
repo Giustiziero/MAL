@@ -195,6 +195,6 @@ yarn-error.log*
 config.py
 
 # files with data
-*.json
+token.json
 
 mal_pip/
