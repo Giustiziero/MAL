@@ -4,7 +4,7 @@ from azure.cosmos.partition_key import PartitionKey
 from dotenv import load_dotenv
 import os
 import time
-from .database_handler import DatabaseHandler, DatabaseNotFoundError, ContainerNotFoundError, ItemNotFoundError
+from database_handler import DatabaseHandler, DatabaseNotFoundError, ContainerNotFoundError, ItemNotFoundError
 
 class AnimeRecommenderService:
     def __init__(self, db_handler, mal_fetcher):

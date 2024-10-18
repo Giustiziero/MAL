@@ -1,12 +1,12 @@
 from flask import Flask, request, jsonify, render_template
 import pandas as pd
 from flask_cors import CORS
-from .anime_recommender_service import AnimeRecommenderService
-from .search_bar_recs import get_suggestions  # Import the new function from database module
+from anime_recommender_service import AnimeRecommenderService
+from search_bar_recs import get_suggestions  # Import the new function from database module
 import logging 
-from .Utils.MAL_connection.MAL_API_fetcher import MAL_API_Fetcher
-from .database_handler import DatabaseHandler
-from .Utils.MAL_connection.MAL_API_Connector import MAL_API_Connector
+from Utils.MAL_connection.MAL_API_fetcher import MAL_API_Fetcher
+from database_handler import DatabaseHandler
+from Utils.MAL_connection.MAL_API_Connector import MAL_API_Connector
 
 app = Flask(__name__)
 CORS(app)
