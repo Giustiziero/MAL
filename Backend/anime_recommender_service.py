@@ -4,7 +4,7 @@ from azure.cosmos.partition_key import PartitionKey
 from dotenv import load_dotenv
 import os
 import time
-from database_handler import DatabaseHandler, DatabaseNotFoundError, ContainerNotFoundError, ItemNotFoundError
+from .database_handler import DatabaseHandler, DatabaseNotFoundError, ContainerNotFoundError, ItemNotFoundError
 
 class AnimeRecommenderService:
     def __init__(self, db_handler, mal_fetcher):
@@ -74,18 +74,22 @@ class AnimeRecommenderService:
             return results[0]  # Return the first matching result
         
         print(f"Anime '{anime_name}' not found in database. Fetching details from external source...")
-        fetched_details = self.mal_fetcher.get_anime_details_from_name(anime_name)
-        
-        # Step 4: Insert the fetched details into the database
-        if fetched_details:
-            self.db_handler.write_anime_details(anime_name, fetched_details)
-            return fetched_details
-        
+        try: 
+            fetched_details = self.mal_fetcher.get_anime_details_from_name(anime_name)
+                
+            # Step 4: Insert the fetched details into the database
+            if fetched_details:
+                self.db_handler.write_anime_details(anime_name, fetched_details)
+                return fetched_details
+        except Exception as e:
+            print("Failed to fetch anime details from external source")
+            return None
+
         # TO-DO: decide whether to make this an exception
         return None
 
 if __name__ == '__main__':
-    from Utils.MAL_connection.MAL_API_fetcher import MAL_API_Fetcher
+    from Backend.Utils.MAL_connection.MAL_API_fetcher import MAL_API_Fetcher
 
     db_handler = DatabaseHandler('MalRecCosmos')
     fetcher = MAL_API_Fetcher()

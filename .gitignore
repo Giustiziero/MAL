@@ -196,3 +196,5 @@ config.py
 
 # files with data
 *.json
+
+mal_pip/
