@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Heading, Text, Anchor, Image, Paragraph } from 'grommet';
+import { Box, Heading, Text, Anchor, Image } from 'grommet';
 import { MailOption, Github, Linkedin } from 'grommet-icons';  // Import GitHub and LinkedIn icons
 
 const About = () => (
