@@ -2,7 +2,6 @@ import requests
 import numpy as np
 import time
 import json
-from .MAL_API_Connector import MAL_API_Connector
 import os
 # This class is used as the main application for collecting data from the myanimelist API
 
@@ -20,20 +19,12 @@ class AnimeDetailsHTTPError:
 
 class MAL_API_Fetcher:
 
-  def __init__(self):
+  def __init__(self, API_connector):
     self.base_url = "https://api.myanimelist.net/v2/"
     self.file_dir  = os.path.dirname(__file__)
     # self.api_key = self.get_api_key()
-    self.api_connector = MAL_API_Connector()
+    self.api_connector = API_connector
     self.access_token = self.api_connector.access_token
-
-  # TO-DO: consider deleting since we already get this from MAL_Connector
-  def get_api_key(self):
-
-    with open(f'{self.file_dir}/token.json', "r") as f:
-      json_file = json.load(f)
-      access_token = json_file['access_token']
-      return access_token
 
   # Function to get user anime list with scores
   def get_user_anime_list(self, username):
@@ -166,7 +157,37 @@ class MAL_API_Fetcher:
 
 if __name__ == '__main__':
   # Create Object
-  fetcher = MAL_API_Fetcher()
+  from MAL_API_Connector import MAL_API_Connector
+  class web_app_handler_test:
+    def __init__(self):
+        self.path = '.env'
+        print(os.path.abspath(self.path))
+    
+    def update_app_setting(self, key, value):
+        self.update_dotenv(key, value)
+        print(f"Dummy updated key:{key} to value: {value}")
+
+    def update_dotenv(self, key, new_value):
+        """Updates or adds a key-value pair in the .env file"""
+        env_vars = {}
+        
+        with open(self.path, 'r') as file:
+            for line in file:
+                if '=' in line and not line.startswith('#'):
+                    k, v = line.strip().split('=', 1)
+                    env_vars[k] = v
+        
+        # Update or add the key-value pair
+        env_vars[key] = new_value
+        
+        # Write the updated content back to the .env file
+        with open(self.path, 'w') as file:
+            for k, v in env_vars.items():
+                file.write(f'{k}={v}\n')
+
+  dummy_handler = web_app_handler_test()
+  connector = MAL_API_Connector(dummy_handler)
+  fetcher = MAL_API_Fetcher(connector)
   # print(fetcher.get_user_anime_list("TensaiOji"))
 
   # Example usage

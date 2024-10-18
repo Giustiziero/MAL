@@ -6,6 +6,7 @@ from search_bar_recs import get_suggestions  # Import the new function from data
 import logging 
 from Utils.MAL_connection.MAL_API_fetcher import MAL_API_Fetcher
 from database_handler import DatabaseHandler
+from Utils.MAL_connection.MAL_API_Connector import MAL_API_Connector
 
 app = Flask(__name__)
 CORS(app)
@@ -17,9 +18,19 @@ logger = logging.getLogger(__name__)
 logger.info("file just ran")
 # Load your similarity DataFrame (assuming it's stored as a CSV file locally)
 # similarity_df = pd.read_csv('./Temp_data/cosine_sim_mat.csv', index_col=0)
+try: 
+    connector = MAL_API_Connector(None)
+    fetcher = MAL_API_Fetcher(connector)
+except Exception as e:
+    fetcher = None
+    logger.warning(f"Failed to start fetcher: {e.message}")
 
-fetcher = MAL_API_Fetcher()
-db_handler = DatabaseHandler('MalRecCosmos')
+try: 
+    db_handler = DatabaseHandler('MalRecCosmos')
+except Exception as e:
+    logger.warning(f"Failed to start db_handler: {e.message}")
+    db_handler = None
+    
 anime_service = AnimeRecommenderService(db_handler, fetcher)
 
 try: 
